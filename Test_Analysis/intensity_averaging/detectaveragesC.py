@@ -3,7 +3,9 @@ import numpy as np
 import math as math
 import sys 
 sys.path.append("Test_Analysis/countour")
+sys.path.append("Test_Analysis")
 import autoselectroi as aroi
+import drive_importing as dimport
     
 class video_analysis():
     '''class used to analyze a single video. Initialize with filename of video, gridsize for analysis, and whether the video should be cropped for analysis'''
@@ -331,9 +333,9 @@ class video_analysis():
         return dimg
 
 
+file = dimport.drive_import("/Code/Test Analysis/Test Analysis/Intensity Averaging Method/test_vid_trimmed.mp4")
 
-        
-va = video_analysis("/Users/andras/Library/CloudStorage/GoogleDrive-galambosa@carleton.edu/Shared drives/Research/Code/Test Analysis/Test Analysis/Intensity Averaging Method/test_vid_trimmed.mp4",(10,10),True)
+va = video_analysis(file,(10,10),True)
 print(va.get_crop_region())
 va.calc_Baselines(100)
 print(va.get_baselines())
