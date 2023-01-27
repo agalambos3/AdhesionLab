@@ -1,9 +1,10 @@
 import cv2 as cv
 import numpy as np
 import math as math
-import autoselectROI as aroi
-
-      
+import sys 
+sys.path.append("Test_Analysis/countour")
+import autoselectroi as aroi
+    
 class video_analysis():
     '''class used to analyze a single video. Initialize with filename of video, gridsize for analysis, and whether the video should be cropped for analysis'''
     def __init__(self,filename:str,gridsize:tuple,crop:bool) -> None:
@@ -332,18 +333,14 @@ class video_analysis():
 
 
         
-va = video_analysis("test_vid_trimmed.mp4",(10,10),True)
+va = video_analysis("/Users/andras/Library/CloudStorage/GoogleDrive-galambosa@carleton.edu/Shared drives/Research/Code/Test Analysis/Test Analysis/Intensity Averaging Method/test_vid_trimmed.mp4",(10,10),True)
 print(va.get_crop_region())
 va.calc_Baselines(100)
 print(va.get_baselines())
 
 contactframes = va.calc_ContactFrameV2(5,25)
 
-# contactrange = va.approx_ContactFrame(4,33)
-# print(contactrange)
 
-# contapprox = va.binaryapprox_ContactFrame(contactrange[0],1,25,33)
-# print(contapprox)
 
 vid = va.get_video()
 
