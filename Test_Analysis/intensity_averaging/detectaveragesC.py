@@ -2,10 +2,10 @@ import cv2 as cv
 import numpy as np
 import math as math
 import sys 
-sys.path.append("Test_Analysis/countour")
-sys.path.append("Test_Analysis")
+sys.path.append("Test_Analysis/utils")
 import autoselectroi as aroi
 import drive_importing as dimport
+
     
 class video_analysis():
     '''class used to analyze a single video. Initialize with filename of video, gridsize for analysis, and whether the video should be cropped for analysis'''
