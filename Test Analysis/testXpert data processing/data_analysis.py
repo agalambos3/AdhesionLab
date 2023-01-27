@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os 
 
 #indexing off by 4 from excel (eg. row 4 in excel is index 0 in array)
 
