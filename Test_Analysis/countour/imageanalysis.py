@@ -1,8 +1,12 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+sys.path.append("Test_Analysis/utils")
+import drive_importing as dimport
 
-file = "Test Images/09:30:22/frame670.jpg"
+
+file = dimport.drive_import("/Code/Test Analysis/Test Analysis/Flaw Detection/Test Images/07:25:22/4mmflaw.png")
 img = cv.imread(cv.samples.findFile(file))
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
