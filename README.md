@@ -5,6 +5,12 @@ If you are reading this document you are likely doing adhesion research with Hel
 3. Give some tips on how to get started with working on this project
 4. Link additional helpful resources 
 
+Because of the nature of this lab there is a wide range of familiarity with computer science and collaborative coding workflows. I will do my best to write this in such a way that if something does not make sense then you have enough information to google your way to an answer. If you are interested in writing code and/or modifying existing code (rather than just using existing code) and you are not familiar with Git and GitHub I suggest reading the resources below that I found helpful when learning about these things:
+
+[Getting Started with Git](https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control)
+
+[Getting Started with GitHub](https://docs.github.com/en/get-started)
+
 **Disclaimer:** Although this repository was created by me, the code within has been contributed to by many people before being put into this repository. The code for the adhesion lab is a very collaborative endeavor and it has taken many peoples’ time and energy to make all of this happen.
 
 
