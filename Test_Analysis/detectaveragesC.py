@@ -2,9 +2,8 @@ import cv2 as cv
 import numpy as np
 import math as math
 import sys 
-sys.path.append("Test_Analysis/utils")
-import autoselectroi as aroi
-import drive_importing as dimport
+from utils import autoselectroi as aroi
+from utils import drive_importing as dimport
 
     
 class video_analysis():

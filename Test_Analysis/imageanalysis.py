@@ -2,8 +2,7 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-sys.path.append("Test_Analysis/utils")
-import drive_importing as dimport
+from utils import drive_importing as dimport
 
 
 file = dimport.drive_import("/Code/Test Analysis/Test Analysis/Flaw Detection/Test Images/07:25:22/4mmflaw.png")
