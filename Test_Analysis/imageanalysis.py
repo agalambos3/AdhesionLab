@@ -5,7 +5,9 @@ import sys
 from utils import drive_importing as dimport
 
 
+
 file = dimport.drive_import("/Code/Test Analysis/Test Analysis/Flaw Detection/Test Images/07:25:22/4mmflaw.png")
+file = dimport.find_file()
 img = cv.imread(cv.samples.findFile(file))
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
