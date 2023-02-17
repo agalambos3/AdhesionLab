@@ -26,13 +26,11 @@ def auto_select_roi(image,visualize=False):
     '''
     img = image
     #turn image to grey
-    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    blur = cv.GaussianBlur(gray,(0,0),11)
+    # gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    blur = cv.GaussianBlur(img,(0,0),11)
 
     #threshold image using otsu binarization
     val,thresh = cv.threshold(blur,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
-    cv.imshow("threshed",thresh)
-    cv.waitKey()
     #find contours of image
     contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
@@ -70,10 +68,10 @@ def auto_select_roi(image,visualize=False):
 
 
     
-file = "flaw.png"
-img =cv.imread(cv.samples.findFile(file))
-crop= auto_select_roi(img,visualize=True)
+# file = "flaw.png"
+# img =cv.imread(cv.samples.findFile(file))
+# crop= auto_select_roi(img,visualize=True)
 
-cv.imshow("cropped",img[crop[0]:crop[1],crop[2]:crop[3]])
-cv.waitKey()
+# cv.imshow("cropped",img[crop[0]:crop[1],crop[2]:crop[3]])
+# cv.waitKey()
 
