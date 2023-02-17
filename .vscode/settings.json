@@ -1,5 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "./Test_Analysis/utils"
-    ]
-}
