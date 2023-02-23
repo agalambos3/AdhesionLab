@@ -5,15 +5,25 @@ from PIL import Image,ImageTk
 from utils import drive_importing as dimport
 
 file = dimport.find_file()
-root = tk.Tk()
+window = tk.Tk()
 
-# Create a photoimage object of the image in the path
-image1 = Image.open("<path/image_name>")
-test = ImageTk.PhotoImage(image1)
+img = Image.open(file)
+print(img.size[0])
+print(img.size[1])
+height = 800
+scale = height/img.size[0]
+print(scale)
+width = int(img.size[1]*scale)
+print(width)
+img = img.resize(size=(height,width))
+img = ImageTk.PhotoImage(img)
 
-label1 = tk.tkinter.Label(image=test)
-label1.image = test
 
-# Position image
-label1.place(x=10, y=10)
-root.mainloop()
+
+flabel= tk.Label(image= img,background="gold",foreground="black")
+rlabel = tk.Label(text = "blah blah",background="blue",foreground="white")
+
+flabel.grid(row=0,column=1)
+rlabel.grid(row=1,column=1)
+
+window.mainloop()
