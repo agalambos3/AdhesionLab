@@ -5,6 +5,9 @@ class analysisGUI:
     def __init__(self,root):
         self.root = root
 
+    def main(self):
+        #run mainloop of gui window and set up window the way I want it 
+        pass
     #function to set video to a specific frame...
         #maybe need tk var to track current video frame 
 
