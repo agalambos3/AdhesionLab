@@ -1,9 +1,7 @@
-import tkinter as tk
-
-from tkinter.filedialog import askopenfilename
-tk.Tk().withdraw() # part of the import if you are not using other tkinter functions
 
 def find_file() -> str: 
+    import tkinter as tk
+    from tkinter.filedialog import askopenfilename
     fn = askopenfilename()
     return fn 
 
