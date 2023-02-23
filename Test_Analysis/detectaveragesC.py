@@ -331,94 +331,95 @@ class video_analysis():
         
         return dimg
 
+if __name__ == "__main__":
 
-file = dimport.drive_import("/Code/Test Analysis/Test Analysis/Intensity Averaging Method/test_vid_trimmed.mp4")
+    file = dimport.drive_import("/Code/Test Analysis/Test Analysis/Intensity Averaging Method/test_vid_trimmed.mp4")
 
-va = video_analysis(file,(10,10),True)
-print(va.get_crop_region())
-va.calc_Baselines(100)
-print(va.get_baselines())
+    va = video_analysis(file,(10,10),True)
+    print(va.get_crop_region())
+    va.calc_Baselines(100)
+    print(va.get_baselines())
 
-contactframes = va.calc_ContactFrameV2(5,25)
-
-
-
-vid = va.get_video()
-
-framenum = contactframes[0]
-vid.set(cv.CAP_PROP_POS_FRAMES, framenum)
-frame = vid.read()[1]
-cv.imshow("contact frame (frame {})".format(framenum),frame)
-cv.waitKey()
-
-vid.set(cv.CAP_PROP_POS_FRAMES, framenum+1)
-frame = vid.read()[1]
-cv.imshow("contact frame +1 (frame {})".format(framenum+1),frame)
-cv.waitKey()
-
-vid.set(cv.CAP_PROP_POS_FRAMES, framenum+150)
-frame = vid.read()[1]
-cv.imshow("contact frame +150  (frame {})".format(framenum+150),frame)
-cv.waitKey()
-
-cregion = va.calc_contactRegions(frame,25)
-print("contact area is {} pixels".format(va.calc_contactArea(cregion)))
-
-cv.imshow("grid",va.drawgrid(frame,contactregion=cregion))
-cv.waitKey()
-
-
-# contapprox = va.binaryapprox_ContactFrame(contactrange[1],5413,25,33)
-# print(contapprox)
-
-framenum = contactframes[1]
-vid.set(cv.CAP_PROP_POS_FRAMES, framenum)
-frame = vid.read()[1]
-cv.imshow("separation frame (frame {})".format(framenum),frame)
-cv.waitKey()
-
-
-vid.set(cv.CAP_PROP_POS_FRAMES, framenum+1)
-frame = vid.read()[1]
-cv.imshow("separation frame +1 (frame {})".format(framenum+1),frame)
-cv.waitKey()
+    contactframes = va.calc_ContactFrameV2(5,25)
 
 
 
+    vid = va.get_video()
+
+    framenum = contactframes[0]
+    vid.set(cv.CAP_PROP_POS_FRAMES, framenum)
+    frame = vid.read()[1]
+    cv.imshow("contact frame (frame {})".format(framenum),frame)
+    cv.waitKey()
+
+    vid.set(cv.CAP_PROP_POS_FRAMES, framenum+1)
+    frame = vid.read()[1]
+    cv.imshow("contact frame +1 (frame {})".format(framenum+1),frame)
+    cv.waitKey()
+
+    vid.set(cv.CAP_PROP_POS_FRAMES, framenum+150)
+    frame = vid.read()[1]
+    cv.imshow("contact frame +150  (frame {})".format(framenum+150),frame)
+    cv.waitKey()
+
+    cregion = va.calc_contactRegions(frame,25)
+    print("contact area is {} pixels".format(va.calc_contactArea(cregion)))
+
+    cv.imshow("grid",va.drawgrid(frame,contactregion=cregion))
+    cv.waitKey()
+
+
+    # contapprox = va.binaryapprox_ContactFrame(contactrange[1],5413,25,33)
+    # print(contapprox)
+
+    framenum = contactframes[1]
+    vid.set(cv.CAP_PROP_POS_FRAMES, framenum)
+    frame = vid.read()[1]
+    cv.imshow("separation frame (frame {})".format(framenum),frame)
+    cv.waitKey()
+
+
+    vid.set(cv.CAP_PROP_POS_FRAMES, framenum+1)
+    frame = vid.read()[1]
+    cv.imshow("separation frame +1 (frame {})".format(framenum+1),frame)
+    cv.waitKey()
 
 
 
 
-# print(va.calc_ContactFrame(1000,1200,33))
-
-
-    
 
 
 
+    # print(va.calc_ContactFrame(1000,1200,33))
 
-# r = region(f,(10,10))
 
-# print(r.get_regions().shape)
-# print(r.get_averages().shape)
+        
 
-# class region():
-#     def __init__(self,img,gridsize) -> None:
 
-#         dimensions = img.shape
-#         xres = gridsize[0]
-#         yres = gridsize[1]
-#         rows = math.floor(dimensions[0]/yres)
-#         columns = math.floor(dimensions[1]/xres)
-    
-    
-#     def get_regions(self):
-#         return self.regions
-    
-#     def get_averages(self):
-#         averages = np.zeros(self.regions.shape[0:2])
-#         for row in range(self.regions.shape[0]):
-#             for col in range(self.regions.shape[1]):
-#                 avg = np.mean(self.regions[row, col])
-#                 averages[row, col]=avg
-#         return averages
+
+
+    # r = region(f,(10,10))
+
+    # print(r.get_regions().shape)
+    # print(r.get_averages().shape)
+
+    # class region():
+    #     def __init__(self,img,gridsize) -> None:
+
+    #         dimensions = img.shape
+    #         xres = gridsize[0]
+    #         yres = gridsize[1]
+    #         rows = math.floor(dimensions[0]/yres)
+    #         columns = math.floor(dimensions[1]/xres)
+        
+        
+    #     def get_regions(self):
+    #         return self.regions
+        
+    #     def get_averages(self):
+    #         averages = np.zeros(self.regions.shape[0:2])
+    #         for row in range(self.regions.shape[0]):
+    #             for col in range(self.regions.shape[1]):
+    #                 avg = np.mean(self.regions[row, col])
+    #                 averages[row, col]=avg
+    #         return averages
