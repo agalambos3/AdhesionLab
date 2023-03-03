@@ -18,6 +18,7 @@ def cv2tk(cvimage,width):
 class analysisGUI:
     def __init__(self):
         self.root = tk.Tk()
+        self.root.title("Video Analysis")
         self.framenum = tk.IntVar(value=1)
         #specific files for testing
         vidfile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/testVideo (6).mp4")
@@ -32,17 +33,21 @@ class analysisGUI:
         self.timeplot.draw()
 
         self.vid.set(cv.CAP_PROP_POS_FRAMES, self.framenum.get())
-        self.frame = self.vid.read()[1]
+        frame = self.vid.read()[1]
         self.vidwidth = 400
-        self.tkframe = cv2tk(self.frame,self.vidwidth)
+        self.tkframe = cv2tk(frame,self.vidwidth)
         self.vidlabel = tk.Label(image=self.tkframe)
         self.bframe= tk.Frame()
         self.infoframe = tk.Frame()
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
-        self.backbutton = tk.Button(self.bframe,text="<",command=self.backframe)
-        self.back50button = tk.Button(self.bframe,text="<<",command=self.back50frame)
-        self.forwardbutton = tk.Button(self.bframe,text=">",command=self.nextframe)
-        self.forward50button = tk.Button(self.bframe,text=">>",command=self.next50frame)
+        self.backbutton = tk.Button(self.bframe,text="<")
+        self.backbutton.bind("<Button-1>",self.backframe)
+        self.back50button = tk.Button(self.bframe,text="<<")
+        self.back50button.bind("<Button-1>",self.back50frame)
+        self.forwardbutton = tk.Button(self.bframe,text=">")
+        self.forwardbutton.bind("<Button-1>",self.nextframe)
+        self.forward50button = tk.Button(self.bframe,text=">>")
+        self.forward50button.bind("<Button-1>",self.next50frame)
 
         self.lastframe = self.vid.get(cv.CAP_PROP_FRAME_COUNT)
         self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=50,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=50)
@@ -51,33 +56,32 @@ class analysisGUI:
         #update video
         fnum =self.framenum.get()
         self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
-        self.frame = self.vid.read()[1]
-        self.tkframe = cv2tk(self.frame,self.vidwidth)
+        frame = self.vid.read()[1]
+        self.tkframe = cv2tk(frame,self.vidwidth)
         self.vidlabel.config(image=self.tkframe) 
         #update frame counter
         self.framenumlabel.config(text="Frame:"+str(fnum))
 
 
-    def nextframe(self):
+    def nextframe(self,event):
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()+1) 
         self.frameupdate()
     
-    def next50frame(self):
+    def next50frame(self,event):
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()+50) 
         self.frameupdate()
     
-    def backframe(self):
+    def backframe(self,event):
         fnum = self.framenum.get()
         if fnum > 1:
-            print(fnum)
             self.framenum.set(value=fnum-1) 
         self.frameupdate()
     
-    def back50frame(self):
+    def back50frame(self,event):
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()-50) 
