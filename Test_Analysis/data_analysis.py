@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from utils import drive_importing as dimport
 
 #indexing off by 4 from excel (eg. row 4 in excel is index 0 in array)
 
@@ -252,7 +253,7 @@ class analysis():
                 index= t.get_end()
                 tnum+= 1
 
-    def plot_trial(self,number):
+    def FvsDplot_trial(self,number):
         '''plot a specific trial from the dataset'''
         t = self.get_trial(number)
         zs = t.get_zero_region()[0]
@@ -275,6 +276,8 @@ class analysis():
         fig = plt.figure()
         ax1 = fig.add_subplot(111)
         ax1.set_title("Trial {}".format(number))
+        ax1.set_xlabel("Standard Travel [mm]")
+        ax1.set_ylabel("Standard Force [N]")
 
 
         ax1.scatter(x[zs:ze], y[zs:ze], s=2, c='b', marker="o", label='zeros')
@@ -285,7 +288,45 @@ class analysis():
 
         print(t)
         plt.legend(loc='upper left');
-        plt.savefig('trial{}'.format(number))
+        plt.show()
+    
+    def FvsTplot_trial(self,number,vline=None):
+        '''plot a specific trial from the dataset'''
+        t = self.get_trial(number)
+        zs = t.get_zero_region()[0]
+        ze = t.get_zero_region()[1]
+
+        ls = t.get_loading_region()[0]
+        le = t.get_loading_region()[1]
+
+        hs = t.get_holding_region()[0]
+        he = t.get_holding_region()[1]
+
+        uls = t.get_unloading_region()[0]
+        ule = t.get_unloading_region()[1]
+
+        ps = t.get_pulloff_region()[0]
+        pe = t.get_pulloff_region()[1]
+
+        x = self.get_npdata()[:,2]
+        y = self.get_npdata()[:,1]
+        fig = plt.figure()
+        ax1 = fig.add_subplot(111)
+        ax1.set_title("Trial {}".format(number))
+        ax1.set_xlabel("Time [s]")
+        ax1.set_ylabel("Standard Force [N]")
+
+
+        ax1.scatter(x[zs:ze], y[zs:ze], s=2, c='b', marker="o", label='zeros')
+        ax1.scatter(x[ls:le-1],y[ls:le-1], s=2, c='r', marker="o", label='loading')
+        ax1.scatter(x[hs:he-1],y[hs:he-1], s=2, c='g', marker="o", label='holding')
+        ax1.scatter(x[uls:ule-1],y[uls:ule-1], s=2, c='m', marker="o", label='unloading')
+        ax1.scatter(x[ps-1:pe],y[ps-1:pe], s=2, c='c', marker="o", label='pulloff')
+        if vline != None:
+            ax1.axvline(vline)
+
+        print(t)
+        plt.legend(loc='upper left');
         plt.show()
         
 def user_input():
@@ -321,4 +362,11 @@ def user_input():
     sdf.to_excel("trial statistics.xlsx",index=False)
 
 if __name__ == "__main__":
-    user_input()
+    file = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
+    anlys = analysis(file)
+    htime = float(10)
+    anlys.run_all(htime)
+    # anlys.FvsDplot_trial(6)
+    anlys.FvsTplot_trial(6,vline=270)
+
+
