@@ -330,6 +330,7 @@ class analysis():
         plt.show()
 
     def FvsT_TK_trial(self,number,vline=None):
+        import io
         '''plot a specific trial from the dataset'''
         t = self.get_trial(number)
         zs = t.get_zero_region()[0]
@@ -349,7 +350,8 @@ class analysis():
 
         x = self.get_npdata()[:,2]
         y = self.get_npdata()[:,1]
-        fig = plt.figure(figsize=[3,2])
+        fig = plt.figure()
+        fig.set_figwidth(3)
         ax1 = fig.add_subplot(111)
         ax1.set_title("Trial {}".format(number))
         ax1.set_xlabel("Time [s]")
@@ -364,7 +366,11 @@ class analysis():
         if vline != None:
             ax1.axvline(vline)
 
-        return fig
+        image_stream = io.BytesIO()
+        plt.savefig(image_stream, format='png')
+        image_stream.seek(0)
+
+        return image_stream
         
 def user_input():
     '''function that allows user to get analysis information they want from data set\n

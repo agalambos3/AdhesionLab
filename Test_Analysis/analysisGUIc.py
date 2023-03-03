@@ -15,6 +15,8 @@ def cv2tk(cvimage,width):
     im_bytes = im_arr.tobytes()
     return tk.PhotoImage(data=im_bytes)
 
+
+
 class analysisGUI:
     def __init__(self):
         self.root = tk.Tk()
@@ -28,17 +30,18 @@ class analysisGUI:
         datafile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
         self.anlys = da.analysis(datafile)
         self.anlys.run_all(10)
-        self.fig = self.anlys.FvsT_TK_trial(6)
-        self.timeplot = FigureCanvasTkAgg(self.fig)
-        self.timeplot.draw()
-
+       
         self.vid.set(cv.CAP_PROP_POS_FRAMES, self.framenum.get())
         frame = self.vid.read()[1]
         self.vidwidth = 400
-        self.tkframe = cv2tk(frame,self.vidwidth)
-        self.vidlabel = tk.Label(image=self.tkframe)
+        self.tkvidimage = cv2tk(frame,self.vidwidth)
+        self.vidlabel = tk.Label(image=self.tkvidimage)
         self.bframe= tk.Frame()
         self.infoframe = tk.Frame()
+        self.plotframe= tk.Frame()
+        self.fig = self.anlys.FvsT_TK_trial(6)
+        self.timeplot = FigureCanvasTkAgg(self.fig,master=self.plotframe)
+        self.timeplot.draw()
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
         self.backbutton = tk.Button(self.bframe,text="<")
         self.backbutton.bind("<Button-1>",self.backframe)
@@ -57,8 +60,8 @@ class analysisGUI:
         fnum =self.framenum.get()
         self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
         frame = self.vid.read()[1]
-        self.tkframe = cv2tk(frame,self.vidwidth)
-        self.vidlabel.config(image=self.tkframe) 
+        self.tkvidimage = cv2tk(frame,self.vidwidth)
+        self.vidlabel.config(image=self.tkvidimage) 
         #update frame counter
         self.framenumlabel.config(text="Frame:"+str(fnum))
 
@@ -100,7 +103,8 @@ class analysisGUI:
         self.infoframe.grid(row=0,column=0)
         self.framenumlabel.pack()
         self.vidlabel.grid(row=0,column=1)
-        self.timeplot.get_tk_widget().grid(row=0,column=2)
+        self.plotframe.grid(row=0,column=2)
+        self.timeplot.get_tk_widget().pack()
         self.bframe.grid(row=1,column=1)
         self.back50button.pack(side="left")
         self.backbutton.pack(side="left")
