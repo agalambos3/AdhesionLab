@@ -1,6 +1,10 @@
 import tkinter as tk
-from utils import drive_importing as dimport
 import cv2 as cv 
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
+NavigationToolbar2Tk)
+from utils import drive_importing as dimport
+import data_analysis as da
+
 
 def cv2tk(cvimage,width):
     scaling = width/cvimage.shape[0]
@@ -15,18 +19,26 @@ class analysisGUI:
     def __init__(self):
         self.root = tk.Tk()
         self.framenum = tk.IntVar(value=1)
-        file = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/testVideo (6).mp4")
-        self.vid = cv.VideoCapture(str(file))
+        #specific files for testing
+        vidfile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/testVideo (6).mp4")
+        self.vid = cv.VideoCapture(str(vidfile))
         if (self.vid.isOpened() == False):
             print("Error opening the video file")
+        datafile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
+        self.anlys = da.analysis(datafile)
+        self.anlys.run_all(10)
+        self.fig = self.anlys.FvsT_TK_trial(6)
+        self.timeplot = FigureCanvasTkAgg(self.fig)
+        self.timeplot.draw()
+
         self.vid.set(cv.CAP_PROP_POS_FRAMES, self.framenum.get())
         self.frame = self.vid.read()[1]
-        self.vidwidth = 600
+        self.vidwidth = 400
         self.tkframe = cv2tk(self.frame,self.vidwidth)
         self.vidlabel = tk.Label(image=self.tkframe)
         self.bframe= tk.Frame()
         self.infoframe = tk.Frame()
-        self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=20)
+        self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
         self.backbutton = tk.Button(self.bframe,text="<",command=self.backframe)
         self.back50button = tk.Button(self.bframe,text="<<",command=self.back50frame)
         self.forwardbutton = tk.Button(self.bframe,text=">",command=self.nextframe)
@@ -84,6 +96,7 @@ class analysisGUI:
         self.infoframe.grid(row=0,column=0)
         self.framenumlabel.pack()
         self.vidlabel.grid(row=0,column=1)
+        self.timeplot.get_tk_widget().grid(row=0,column=2)
         self.bframe.grid(row=1,column=1)
         self.back50button.pack(side="left")
         self.backbutton.pack(side="left")
