@@ -30,18 +30,26 @@ class analysisGUI:
         datafile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
         self.anlys = da.analysis(datafile)
         self.anlys.run_all(10)
+        t=self.anlys.get_trial(6)
+        ze= t.get_zero_region()[1]
+        pe=t.get_pulloff_region()[1]
+        print(self.anlys.get_npdata()[ze])
+        print(self.anlys.get_npdata()[pe])
        
         self.vid.set(cv.CAP_PROP_POS_FRAMES, self.framenum.get())
         frame = self.vid.read()[1]
-        self.vidwidth = 400
-        self.tkvidimage = cv2tk(frame,self.vidwidth)
+        self.vidheight = 400
+        self.tkvidimage = cv2tk(frame,self.vidheight)
         self.vidlabel = tk.Label(image=self.tkvidimage)
+        self.vidwidth = self.vidlabel.winfo_reqwidth()
         self.bframe= tk.Frame()
         self.infoframe = tk.Frame()
         self.plotframe= tk.Frame()
-        self.fig = self.anlys.FvsT_TK_trial(6)
-        self.timeplot = FigureCanvasTkAgg(self.fig,master=self.plotframe)
-        self.timeplot.draw()
+        figdata = self.anlys.FvsT_TK_trial(6,vline=270)
+        self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+
+        self.timeplot = cv2tk(self.fig,400)
+        self.plotlabel = tk.Label(image=self.timeplot)
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
         self.backbutton = tk.Button(self.bframe,text="<")
         self.backbutton.bind("<Button-1>",self.backframe)
@@ -60,10 +68,16 @@ class analysisGUI:
         fnum =self.framenum.get()
         self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
         frame = self.vid.read()[1]
-        self.tkvidimage = cv2tk(frame,self.vidwidth)
+        self.tkvidimage = cv2tk(frame,self.vidheight)
         self.vidlabel.config(image=self.tkvidimage) 
         #update frame counter
         self.framenumlabel.config(text="Frame:"+str(fnum))
+        #update time plot
+        datatime = (fnum/52)+243
+        figdata = self.anlys.FvsT_TK_trial(6,vline=datatime)
+        self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+        self.timeplot = cv2tk(self.fig,400)
+        self.plotlabel.config(image=self.timeplot)
 
 
     def nextframe(self,event):
@@ -103,8 +117,8 @@ class analysisGUI:
         self.infoframe.grid(row=0,column=0)
         self.framenumlabel.pack()
         self.vidlabel.grid(row=0,column=1)
-        self.plotframe.grid(row=0,column=2)
-        self.timeplot.get_tk_widget().pack()
+        self.plotframe.grid(row=0,column=2) 
+        self.plotlabel.grid(row=0,column=3)       
         self.bframe.grid(row=1,column=1)
         self.back50button.pack(side="left")
         self.backbutton.pack(side="left")

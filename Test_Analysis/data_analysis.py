@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils import drive_importing as dimport
-
+import cv2 as cv
 
 #indexing off by 4 from excel (eg. row 4 in excel is index 0 in array)
 
@@ -350,8 +350,7 @@ class analysis():
 
         x = self.get_npdata()[:,2]
         y = self.get_npdata()[:,1]
-        fig = plt.figure()
-        fig.set_figwidth(3)
+        fig = plt.figure(dpi=100)
         ax1 = fig.add_subplot(111)
         ax1.set_title("Trial {}".format(number))
         ax1.set_xlabel("Time [s]")
@@ -369,8 +368,9 @@ class analysis():
         image_stream = io.BytesIO()
         plt.savefig(image_stream, format='png')
         image_stream.seek(0)
+        bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
 
-        return image_stream
+        return bytes
         
 def user_input():
     '''function that allows user to get analysis information they want from data set\n
