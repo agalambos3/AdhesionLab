@@ -366,12 +366,12 @@ class analysis():
         if vline != None:
             ax1.axvline(vline)
 
-        # image_stream = io.BytesIO()
-        # plt.savefig(image_stream, format='png')
-        # image_stream.seek(0)
-        # bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
+        image_stream = io.BytesIO()
+        plt.savefig(image_stream, format='png')
+        image_stream.seek(0)
+        bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
 
-        return self.fig
+        return bytes
         
 def user_input():
     '''function that allows user to get analysis information they want from data set\n
