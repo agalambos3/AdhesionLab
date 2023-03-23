@@ -5,7 +5,6 @@ NavigationToolbar2Tk)
 from utils import drive_importing as dimport
 import data_analysis as da
 
-
 def cv2tk(cvimage,width):
     scaling = width/cvimage.shape[0]
     height = int(scaling*cvimage.shape[1])
