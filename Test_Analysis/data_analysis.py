@@ -372,6 +372,16 @@ class analysis():
         bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
 
         return bytes
+    
+    def sync(self,number,startframe,endframe,framerate):
+        t = self.get_trial(number)
+        data_contact = t.get_zero_region()[1]
+        data_separation = t.get_pulloff_region()[1]
+        vid_contact = startframe
+        vid_separation = endframe
+
+        
+        pass
         
 def user_input():
     '''function that allows user to get analysis information they want from data set\n
