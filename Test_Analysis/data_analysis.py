@@ -130,6 +130,7 @@ class analysis():
         self.npdata = pd.DataFrame.to_numpy(df)
         self.trialList = []
         self.timestep = .01
+        self.fig = plt.figure()
     
     def get_npdata(self):
         '''get data in numpy array form'''
@@ -347,11 +348,11 @@ class analysis():
 
         ps = t.get_pulloff_region()[0]
         pe = t.get_pulloff_region()[1]
-
+        self.fig.set_dpi(300)
         x = self.get_npdata()[:,2]
         y = self.get_npdata()[:,1]
-        fig = plt.figure(dpi=100)
-        ax1 = fig.add_subplot(111)
+        plt.clf()
+        ax1 = self.fig.add_subplot(111)
         ax1.set_title("Trial {}".format(number))
         ax1.set_xlabel("Time [s]")
         ax1.set_ylabel("Standard Force [N]")
@@ -365,12 +366,12 @@ class analysis():
         if vline != None:
             ax1.axvline(vline)
 
-        image_stream = io.BytesIO()
-        plt.savefig(image_stream, format='png')
-        image_stream.seek(0)
-        bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
+        # image_stream = io.BytesIO()
+        # plt.savefig(image_stream, format='png')
+        # image_stream.seek(0)
+        # bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
 
-        return bytes
+        return self.fig
         
 def user_input():
     '''function that allows user to get analysis information they want from data set\n
