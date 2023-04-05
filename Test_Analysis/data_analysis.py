@@ -131,6 +131,7 @@ class analysis():
         self.trialList = []
         self.timestep = .01
         self.fig = plt.figure()
+
     
     def get_npdata(self):
         '''get data in numpy array form'''
@@ -140,9 +141,9 @@ class analysis():
         '''returns the list of trials'''
         return self.trialList
 
-    def get_trial(self,number):
+    def get_trial(self,number)->trial:
         '''get a specific trial from the list of trials'''
-        return self.trialList[number-1]
+        return self.trialList[number-1] 
 
     def get_num_trials(self):
         return len(self.trialList)
@@ -202,7 +203,6 @@ class analysis():
 
             #advance holdtime number of seconds in the array to go through holding section
             htime = 0
-            deltime = 0
             while htime < holdtime:
                 deltime = self.npdata[i+1,2]-self.npdata[i,2]
                 htime += deltime
@@ -224,10 +224,12 @@ class analysis():
             #is there a fucky wucky here?
 
             #summing and iteration through pulloff region
-            while force < 0:
+            deltime = self.npdata[i+1,2]-self.npdata[i,2]
+            while force < 0 and deltime <= 1:
                 force = self.get_npdata()[i,1]
                 nxtforce = self.get_npdata()[i+1,1]
                 deltrvl = self.npdata[i+1,0]-self.npdata[i,0]
+                deltime = self.npdata[i+1,2]-self.npdata[i,2]
                 t.add_pulloff(((force+nxtforce)/2)*abs(deltrvl))
                 i+=1
             i5 = i
@@ -275,8 +277,7 @@ class analysis():
 
         x = self.get_npdata()[:,0]
         y = self.get_npdata()[:,1]
-        fig = plt.figure()
-        ax1 = fig.add_subplot(111)
+        ax1 = self.fig.add_subplot(111)
         ax1.set_title("Trial {}".format(number))
         ax1.set_xlabel("Standard Travel [mm]")
         ax1.set_ylabel("Standard Force [N]")
@@ -312,8 +313,7 @@ class analysis():
 
         x = self.get_npdata()[:,2]
         y = self.get_npdata()[:,1]
-        fig = plt.figure()
-        ax1 = fig.add_subplot(111)
+        ax1 = self.fig.add_subplot(111)
         ax1.set_title("Trial {}".format(number))
         ax1.set_xlabel("Time [s]")
         ax1.set_ylabel("Standard Force [N]")
@@ -373,14 +373,44 @@ class analysis():
 
         return bytes
     
-    def sync(self,number,startframe,endframe,framerate):
-        t = self.get_trial(number)
-        data_contact = t.get_zero_region()[1]
-        data_separation = t.get_pulloff_region()[1]
-        vid_contact = startframe
-        vid_separation = endframe
+    def sync(self,trialnum,framerate,contact,separation):
+        trial=self.get_trial(trialnum)
+        start = trial.get_loading_region()[0]
+        end = trial.get_pulloff_region()[1]
+        data = self.get_npdata()[start:end]
+        datalength = len(data)
+        print(datalength)
+        vidlength = (separation - contact)
+        print(vidlength)
+        time = 0 
+        deltime =0
+        vidframe = contact
+        syncdic = {}
+        if vidlength >= datalength:
+            stime = data[0][2]
+            time = stime
+            rowindex = start
+            # call = 0
+            for row in data:
+                deltime += row[2]-time
+                time = row[2]
+                rowindex += 1
+                print("rowindex is {}".format(rowindex))
+                print("deltime is {}".format(deltime))
+                print("time is {}".format(time))
+                if deltime > (1/framerate):
+                    # call += 1
+                    deltime = 0 
+                    vidframe = int((time-stime)*framerate)+contact
+                    syncdic[vidframe] = time
+                    print("appended vidframe is {}".format(vidframe))
 
-        
+            print(syncdic)
+
+
+                
+        if vidlength < datalength:
+            print("data length is {}".format(datalength))
         pass
         
 def user_input():
@@ -420,7 +450,8 @@ if __name__ == "__main__":
     anlys = analysis(file)
     htime = float(10)
     anlys.run_all(htime)
+    anlys.sync(6,60,370,2155)
     # anlys.FvsDplot_trial(6)
-    anlys.FvsTplot_trial(6)
+    # anlys.FvsTplot_trial(6)
 
 
