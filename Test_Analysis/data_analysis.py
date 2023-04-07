@@ -438,9 +438,38 @@ class analysis():
                 syncdic[int(framenum+contact)] = data[dataindex][2]
                 return syncdic
     
-    def sync3(self,trialnum,separation):
-        #similar method to sync2 but work from end 
-        pass            
+    def sync3(self,trialnum,contact,separation):
+        #similar method to sync2 but work from separation since data there matters more
+        trial=self.get_trial(trialnum)
+        start = trial.get_loading_region()[0]
+        end = trial.get_pulloff_region()[1]
+        print(start,end)
+        data = self.get_npdata()[start:end]
+        datalength = len(data)
+        vidlength = (separation - contact)
+        print(vidlength)
+        contact_time = data[0][2]
+        separation_time = data[-1][2]
+        vid_time = np.linspace(contact_time,separation_time,vidlength,endpoint=True)
+        syncdic = {}
+        dataindex = -1
+
+
+        for framenum in range(separation,contact):
+            try:
+                print(framenum)
+                timediff1 = abs(vid_time[framenum-contact]-data[dataindex-2][2])
+                timediff2 = abs(vid_time[framenum-contact]-data[dataindex+1][2])
+                while timediff1 > timediff2:
+                    timediff1 = timediff2
+                    # print(timediff1)
+                    dataindex -= 1
+                    timediff2 = abs(vid_time[framenum]-data[dataindex-1][2])
+                    # print(timediff2)
+                syncdic[int(framenum+contact)] = data[dataindex][2]
+            except IndexError:
+                syncdic[int(framenum+contact)] = data[dataindex][2]
+                return syncdic            
         
 
             
@@ -490,7 +519,7 @@ if __name__ == "__main__":
     anlys = analysis(file)
     htime = float(10)
     anlys.run_all(htime)
-    print(anlys.sync2(6,60,370,2155))
+    print(anlys.sync3(6,370,2155))
     
     # anlys.FvsDplot_trial(6)
     # anlys.FvsTplot_trial(6)
