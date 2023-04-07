@@ -30,6 +30,7 @@ class analysisGUI:
         self.anlys = da.analysis(datafile)
         self.anlys.run_all(10)
         t=self.anlys.get_trial(6)
+        self.syncodic= self.anlys.sync2(6,60,370,2155)
         ze= t.get_zero_region()[1]
         pe=t.get_pulloff_region()[1]
         print(self.anlys.get_npdata()[ze])
@@ -72,7 +73,10 @@ class analysisGUI:
         #update frame counter
         self.framenumlabel.config(text="Frame:"+str(fnum))
         #update time plot
-        datatime = (fnum/52)+243
+        try:
+            datatime = self.syncodic[int(fnum)]
+        except KeyError:
+            datatime = None
         figdata = self.anlys.FvsT_TK_trial(6,vline=datatime)
         self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
         self.timeplot = cv2tk(self.fig,400)
