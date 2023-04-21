@@ -6,6 +6,7 @@ from utils import drive_importing as dimport
 import data_analysis as da
 
 def cv2tk(cvimage,width):
+    """takes an opencv image and converts it into a tk.Photoimage"""
     scaling = width/cvimage.shape[0]
     height = int(scaling*cvimage.shape[1])
     dim = (height,width)
@@ -17,6 +18,7 @@ def cv2tk(cvimage,width):
 
 
 class analysisGUI:
+    """class used to run analysis GUI."""
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Video Analysis")
@@ -30,7 +32,7 @@ class analysisGUI:
         self.anlys = da.analysis(datafile)
         self.anlys.run_all(10)
         t=self.anlys.get_trial(6)
-        self.syncodic= self.anlys.sync2(6,60,370,2155)
+        self.syncodic= self.anlys.sync2(6,370,2155)
         ze= t.get_zero_region()[1]
         pe=t.get_pulloff_region()[1]
         print(self.anlys.get_npdata()[ze])
@@ -64,6 +66,7 @@ class analysisGUI:
         self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=50,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=50)
         
     def frameupdate(self):
+        '''Updates the ui elements to match current frame position. Usually called by tkinter event when user moves to different frame'''
         #update video
         fnum =self.framenum.get()
         self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
@@ -83,31 +86,37 @@ class analysisGUI:
         self.plotlabel.config(image=self.timeplot)
 
 
-    def nextframe(self,event):
+    def nextframe(self,event:tk.Event):
+        print(type(event))
+        '''event called when the > frame button is pressed. Changes the frame by +1 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()+1) 
         self.frameupdate()
     
-    def next50frame(self,event):
+    def next50frame(self,event:tk.Event):
+        '''event called when the >> frame button is pressed. Changes the frame by +50 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()+50) 
         self.frameupdate()
     
-    def backframe(self,event):
+    def backframe(self,event:tk.Event):
+        '''event called when the < frame button is pressed. Changes the frame by -1 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum > 1:
             self.framenum.set(value=fnum-1) 
         self.frameupdate()
     
-    def back50frame(self,event):
+    def back50frame(self,event:tk.Event):
+        '''event called when the << frame button is pressed. Changes the frame by -50 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()-50) 
         self.frameupdate()
     
     def gotoframe(self,num):
+        '''event called when the slider is used to select the frame. Changes the frame based on slide position and updates the GUI accordingly'''
         self.framenum.set(value=num) 
         self.frameupdate()
         
@@ -117,6 +126,7 @@ class analysisGUI:
         
 
     def main(self):
+        '''main method that is called to run the GUI. The GUI is layed out and the mainloop() tkinter method is called.'''
         self.infoframe.grid(row=0,column=0)
         self.framenumlabel.pack()
         self.vidlabel.grid(row=0,column=1)
