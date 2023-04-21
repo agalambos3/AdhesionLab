@@ -32,7 +32,12 @@ class analysisGUI:
         self.anlys = da.analysis(datafile)
         self.anlys.run_all(10)
         t=self.anlys.get_trial(6)
-        self.syncodic= self.anlys.sync2(6,370,2155)
+        self.contactframe = 5
+        self.separationframe = 6
+
+        self.syncbool = False
+
+        self.syncodic= None
         ze= t.get_zero_region()[1]
         pe=t.get_pulloff_region()[1]
         print(self.anlys.get_npdata()[ze])
@@ -40,6 +45,7 @@ class analysisGUI:
        
         self.vid.set(cv.CAP_PROP_POS_FRAMES, self.framenum.get())
         frame = self.vid.read()[1]
+        #defining GUI elements
         self.vidheight = 400
         self.tkvidimage = cv2tk(frame,self.vidheight)
         self.vidlabel = tk.Label(image=self.tkvidimage)
@@ -49,7 +55,6 @@ class analysisGUI:
         self.plotframe= tk.Frame()
         figdata = self.anlys.FvsT_TK_trial(6,vline=270)
         self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-
         self.timeplot = cv2tk(self.fig,400)
         self.plotlabel = tk.Label(image=self.timeplot)
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
@@ -61,6 +66,12 @@ class analysisGUI:
         self.forwardbutton.bind("<Button-1>",self.nextframe)
         self.forward50button = tk.Button(self.bframe,text=">>")
         self.forward50button.bind("<Button-1>",self.next50frame)
+        self.contactbutton = tk.Button(self.infoframe,text="contact")
+        self.contactbutton.bind("<Button-1>",self.contactset)
+        self.separationbutton = tk.Button(self.infoframe,text="separation")
+        self.separationbutton.bind("<Button-1>",self.separationset)
+        self.syncbutton = tk.Button(self.infoframe,text="sync")
+        self.syncbutton.bind("<Button-1>",self.guisync)
 
         self.lastframe = self.vid.get(cv.CAP_PROP_FRAME_COUNT)
         self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=50,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=50)
@@ -69,6 +80,7 @@ class analysisGUI:
         '''Updates the ui elements to match current frame position. Usually called by tkinter event when user moves to different frame'''
         #update video
         fnum =self.framenum.get()
+        print(fnum)
         self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
         frame = self.vid.read()[1]
         self.tkvidimage = cv2tk(frame,self.vidheight)
@@ -76,14 +88,44 @@ class analysisGUI:
         #update frame counter
         self.framenumlabel.config(text="Frame:"+str(fnum))
         #update time plot
-        try:
-            datatime = self.syncodic[int(fnum)]
-        except KeyError:
+        if self.syncbool == True:
+            try:
+                datatime = self.syncodic[int(fnum)]
+            except KeyError:
+                datatime = None
+            figdata = self.anlys.FvsT_TK_trial(6,vline=datatime)
+            self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+            self.timeplot = cv2tk(self.fig,400)
+            self.plotlabel.config(image=self.timeplot)
+        else:
             datatime = None
-        figdata = self.anlys.FvsT_TK_trial(6,vline=datatime)
-        self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-        self.timeplot = cv2tk(self.fig,400)
-        self.plotlabel.config(image=self.timeplot)
+            figdata = self.anlys.FvsT_TK_trial(6,vline=datatime)
+            self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+            self.timeplot = cv2tk(self.fig,400)
+            self.plotlabel.config(image=self.timeplot)
+    
+    def guisync(self,event:tk.Event):
+        '''event called when synchronization button is pressed. Synchronizes video frames to force/displacement/time data based on user's contact and separation input'''
+        if type(self.contactframe) == int and type(self.separationframe) == int:
+            try:
+                self.syncodic= self.anlys.sync2(6,self.contactframe,self.separationframe)
+                self.syncbool = True
+                print("Synced!")
+                self.frameupdate()
+            except:
+                print("sync failed")
+        else:
+            print("contact or separation frame not given")
+    
+    def contactset(self,event:tk.Event):
+        self.contactframe = self.framenum.get()
+        print("contact frame set to {}".format(self.contactframe))
+    
+    def separationset(self,event:tk.Event):
+        self.separationframe = self.framenum.get()
+        print("separation frame set to {}".format(self.separationframe))
+    
+
 
 
     def nextframe(self,event:tk.Event):
@@ -129,6 +171,9 @@ class analysisGUI:
         '''main method that is called to run the GUI. The GUI is layed out and the mainloop() tkinter method is called.'''
         self.infoframe.grid(row=0,column=0)
         self.framenumlabel.pack()
+        self.contactbutton.pack()
+        self.separationbutton.pack()
+        self.syncbutton.pack()
         self.vidlabel.grid(row=0,column=1)
         self.plotframe.grid(row=0,column=2) 
         self.plotlabel.grid(row=0,column=3)       
