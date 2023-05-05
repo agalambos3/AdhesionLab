@@ -85,7 +85,7 @@ class analysisGUI:
         self.syncbutton.bind("<Button-1>",self.guisync)
 
         self.lastframe = self.vid.get(cv.CAP_PROP_FRAME_COUNT)
-        self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=50,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=50)
+        self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=25,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=50)
         
     def frameupdate(self):
         stime = time.time()
