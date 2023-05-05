@@ -80,7 +80,6 @@ class analysisGUI:
         '''Updates the ui elements to match current frame position. Usually called by tkinter event when user moves to different frame'''
         #update video
         fnum =self.framenum.get()
-        print(fnum)
         self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
         frame = self.vid.read()[1]
         self.tkvidimage = cv2tk(frame,self.vidheight)

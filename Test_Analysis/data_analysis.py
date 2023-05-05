@@ -409,13 +409,12 @@ class analysis():
             print(syncdic)
         
     def sync2(self,trialnum,contact,separation):
-        """synchronizes force/displament/time data from specified trial with video frames."""
-        trial=self.get_trial(trialnum)
+        """synchronizes force/displament/time data from specified trial with video frames. Accurate on contact frame but inaccurate on separation"""
+        trial=self.get_trial(trialnum) 
         start = trial.get_loading_region()[0]
         end = trial.get_pulloff_region()[1]
         print(start,end)
         data = self.get_npdata()[start:end]
-        datalength = len(data)
         vidlength = (separation - contact)
         print(vidlength)
         contact_time = data[0][2]
