@@ -24,6 +24,7 @@ def viddict(cvvideo:cv.VideoCapture):
     for i in range(int(vid.get(cv.CAP_PROP_FRAME_COUNT))):
         vdic[i]= vid.read()[1]
     return vdic
+    
         
 
 class analysisGUI:
@@ -37,6 +38,7 @@ class analysisGUI:
         self.vid = cv.VideoCapture(str(self.vidfile))
         if (self.vid.isOpened() == False):
             print("Error opening the video file")
+        
         datafile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
         self.anlys = da.analysis(datafile)
         self.anlys.run_all(10)
@@ -52,8 +54,8 @@ class analysisGUI:
         print(self.anlys.get_npdata()[ze])
         print(self.anlys.get_npdata()[pe])
         #TODO change video to dictionary to get constant runtime. opencv vid.set method seems to use list implementation as run time increases the futher you go into the video 
-        self.vid.set(cv.CAP_PROP_POS_FRAMES, self.framenum.get())
-        frame = self.vid.read()[1]
+        self.viddict = viddict(self.vid)
+        frame = self.viddict[1]
         #defining GUI elements
         self.vidheight = 400
         self.tkvidimage = cv2tk(frame,self.vidheight)
@@ -90,8 +92,7 @@ class analysisGUI:
         '''Updates the ui elements to match current frame position. Usually called by tkinter event when user moves to different frame'''
         #update video
         fnum =self.framenum.get()
-        self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
-        frame = self.vid.read()[1]
+        frame=self.viddict[fnum]
         self.tkvidimage = cv2tk(frame,self.vidheight)
         self.vidlabel.config(image=self.tkvidimage)
         vtime = time.time()
@@ -223,6 +224,8 @@ if __name__ == '__main__':
     # cv.imshow("frame",vdic[1000])
     # print("frame shown in {}s".format(time.time()-time100))
     # cv.waitKey()
+    # time1000 = time.time()
     # cv.imshow("frame",vdic[2000])
+    # print("frame shown in {}s".format(time.time()-time1000))
     # cv.waitKey()
 
