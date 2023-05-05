@@ -445,9 +445,8 @@ class analysis():
         trial=self.get_trial(trialnum)
         start = trial.get_loading_region()[0]
         end = trial.get_pulloff_region()[1]
-        print(start,end)
+        print("sync trial start frame is {} end frame is {}".format(start,end))
         data = self.get_npdata()[start:end]
-        datalength = len(data)
         vidlength = (separation - contact)
         print(vidlength)
         contact_time = data[0][2]
@@ -459,23 +458,23 @@ class analysis():
 
 
         for framenum in range(vidlength,0,-1):
-            print("frame num is{} ".format(framenum))
+            # print("frame num is{} ".format(framenum))
             try:
                 timediff1 = abs(vid_time[framenum-1]-data[dataindex-1][2])
-                print("timediff1 is {}".format(timediff1))
+                # print("timediff1 is {}".format(timediff1))
                 timediff2 = abs(vid_time[framenum-1]-data[dataindex-2][2])
                 while timediff1 > timediff2:
                     timediff1 = timediff2
-                    print(timediff1)
+                    # print(timediff1)
                     dataindex -= 1
                     timediff2 = abs(vid_time[framenum]-data[dataindex-2][2])
-                    print(timediff2)
+                    # print(timediff2)
                 syncdic[int(framenum+contact)] = data[dataindex][2]
             except IndexError:
                 print("index error has occured, current framenum is {}".format(framenum))
                 print("data index is {}".format(dataindex))
                 syncdic[int(framenum+contact)] = data[dataindex][2]
-                return syncdic            
+        return syncdic            
         
 
             

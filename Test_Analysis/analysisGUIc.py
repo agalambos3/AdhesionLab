@@ -103,15 +103,16 @@ class analysisGUI:
         if self.syncbool == True:
             try:
                 datatime = self.syncodic[int(fnum)]
-            except KeyError:
+            except Exception as e:
                 datatime = None
-            figdata = self.anlys.FvsT_TK_trial(6,vline=datatime)
+                print("error is {}".format(e))
+            figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
             self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
             self.timeplot = cv2tk(self.fig,400)
             self.plotlabel.config(image=self.timeplot)
         else:
             datatime = None
-            figdata = self.anlys.FvsT_TK_trial(6,vline=datatime)
+            figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
             self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
             self.timeplot = cv2tk(self.fig,400)
             self.plotlabel.config(image=self.timeplot)
