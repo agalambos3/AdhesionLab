@@ -263,7 +263,8 @@ class video_analysis():
     def calc_ContactFrameV2(self,initsamples:int,cutoff,minframe=1):
         """combines linear search followed by binary search to find frames corresonding to first contact and final seperation in video
         @param initsamples - number of evenly space frames to sample in initial linear search
-        @param cutoff - number of stdevs frame averages differs from baseline averages for a region is considered to be in contact  """
+        @param cutoff - number of stdevs frame averages differs from baseline averages for a region is considered to be in contact 
+        @param minframe - number of frames to get within actual frame.  """
         #linear search gives approximate range of frames in which contact and seperation lie 
         contactrange = self.approx_ContactFrame(initsamples,cutoff)
         #total number of frames in video

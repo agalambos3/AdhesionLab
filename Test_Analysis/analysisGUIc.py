@@ -107,7 +107,7 @@ class analysisGUI:
         '''event called when synchronization button is pressed. Synchronizes video frames to force/displacement/time data based on user's contact and separation input'''
         if type(self.contactframe) == int and type(self.separationframe) == int:
             try:
-                self.syncodic= self.anlys.sync2(6,self.contactframe,self.separationframe)
+                self.syncodic= self.anlys.sync3(6,self.contactframe,self.separationframe)
                 self.syncbool = True
                 print("Synced!")
                 self.frameupdate()
@@ -128,7 +128,6 @@ class analysisGUI:
 
 
     def nextframe(self,event:tk.Event):
-        print(type(event))
         '''event called when the > frame button is pressed. Changes the frame by +1 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum < self.lastframe:

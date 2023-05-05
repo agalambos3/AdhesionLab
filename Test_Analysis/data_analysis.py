@@ -409,7 +409,7 @@ class analysis():
             print(syncdic)
         
     def sync2(self,trialnum,contact,separation):
-        """synchronizes force/displament/time data from specified trial with video frames. Accurate on contact frame but inaccurate on separation"""
+        """synchronizes force/displament/time data from specified trial with video frames. Accurate on contact frame but inaccurate on separation (this is because sync iterates from beginning to end of video)"""
         trial=self.get_trial(trialnum) 
         start = trial.get_loading_region()[0]
         end = trial.get_pulloff_region()[1]
@@ -453,24 +453,27 @@ class analysis():
         contact_time = data[0][2]
         separation_time = data[-1][2]
         vid_time = np.linspace(contact_time,separation_time,vidlength,endpoint=True)
-        print("last vidtime is {}".format(vid_time[-1]))
+        # print("last vidtime is {}".format(vid_time[-1]))
         syncdic = {}
         dataindex = -1
 
 
-        for framenum in range(separation,contact):
+        for framenum in range(vidlength,0,-1):
+            print("frame num is{} ".format(framenum))
             try:
-                print(framenum)
-                timediff1 = abs(vid_time[framenum-contact]-data[dataindex-2][2])
-                timediff2 = abs(vid_time[framenum-contact]-data[dataindex+1][2])
+                timediff1 = abs(vid_time[framenum-1]-data[dataindex-1][2])
+                print("timediff1 is {}".format(timediff1))
+                timediff2 = abs(vid_time[framenum-1]-data[dataindex-2][2])
                 while timediff1 > timediff2:
                     timediff1 = timediff2
-                    # print(timediff1)
+                    print(timediff1)
                     dataindex -= 1
-                    timediff2 = abs(vid_time[framenum]-data[dataindex-1][2])
-                    # print(timediff2)
+                    timediff2 = abs(vid_time[framenum]-data[dataindex-2][2])
+                    print(timediff2)
                 syncdic[int(framenum+contact)] = data[dataindex][2]
             except IndexError:
+                print("index error has occured, current framenum is {}".format(framenum))
+                print("data index is {}".format(dataindex))
                 syncdic[int(framenum+contact)] = data[dataindex][2]
                 return syncdic            
         
@@ -522,14 +525,14 @@ if __name__ == "__main__":
     anlys = analysis(file)
     htime = float(10)
     anlys.run_all(htime)
-    syncdic= anlys.sync2(6,370,2155)
+    syncdic= anlys.sync3(6,370,2155)
     t = anlys.get_trial(6)
     start = t.get_loading_region()[0]
     end = t.get_pulloff_region()[1]
-    # print(syncdic)
-    print(anlys.get_npdata()[end-20:end])
+    print("syndic is given by:")
+    print(syncdic)
+    # print(anlys.get_npdata()[end-20:end])
     
     # anlys.FvsDplot_trial(6)
-    anlys.FvsTplot_trial(6)
 
 
