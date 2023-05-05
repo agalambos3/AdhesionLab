@@ -4,6 +4,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 NavigationToolbar2Tk)
 from utils import drive_importing as dimport
 import data_analysis as da
+import time
 
 def cv2tk(cvimage,width):
     """takes an opencv image and converts it into a tk.Photoimage"""
@@ -15,7 +16,15 @@ def cv2tk(cvimage,width):
     im_bytes = im_arr.tobytes()
     return tk.PhotoImage(data=im_bytes)
 
-
+def viddict(cvvideo:cv.VideoCapture):
+    """takes a cvvideo and converts it into a dictionary consisting of framenum:opencv images key value pair entries"""
+    vid = cvvideo
+    vid.set(cv.CAP_PROP_POS_FRAMES, 1)
+    vdic = {}
+    for i in range(int(vid.get(cv.CAP_PROP_FRAME_COUNT))):
+        vdic[i]= vid.read()[1]
+    return vdic
+        
 
 class analysisGUI:
     """class used to run analysis GUI."""
@@ -24,8 +33,8 @@ class analysisGUI:
         self.root.title("Video Analysis")
         self.framenum = tk.IntVar(value=1)
         #specific files for testing
-        vidfile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/testVideo (6).mp4")
-        self.vid = cv.VideoCapture(str(vidfile))
+        self.vidfile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/testVideo (6).mp4")
+        self.vid = cv.VideoCapture(str(self.vidfile))
         if (self.vid.isOpened() == False):
             print("Error opening the video file")
         datafile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
@@ -42,7 +51,7 @@ class analysisGUI:
         pe=t.get_pulloff_region()[1]
         print(self.anlys.get_npdata()[ze])
         print(self.anlys.get_npdata()[pe])
-       
+        #TODO change video to dictionary to get constant runtime. opencv vid.set method seems to use list implementation as run time increases the futher you go into the video 
         self.vid.set(cv.CAP_PROP_POS_FRAMES, self.framenum.get())
         frame = self.vid.read()[1]
         #defining GUI elements
@@ -77,13 +86,16 @@ class analysisGUI:
         self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=50,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=50)
         
     def frameupdate(self):
+        stime = time.time()
         '''Updates the ui elements to match current frame position. Usually called by tkinter event when user moves to different frame'''
         #update video
         fnum =self.framenum.get()
         self.vid.set(cv.CAP_PROP_POS_FRAMES, fnum)
         frame = self.vid.read()[1]
         self.tkvidimage = cv2tk(frame,self.vidheight)
-        self.vidlabel.config(image=self.tkvidimage) 
+        self.vidlabel.config(image=self.tkvidimage)
+        vtime = time.time()
+        print("video update took {}".format(vtime-stime))
         #update frame counter
         self.framenumlabel.config(text="Frame:"+str(fnum))
         #update time plot
@@ -102,6 +114,8 @@ class analysisGUI:
             self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
             self.timeplot = cv2tk(self.fig,400)
             self.plotlabel.config(image=self.timeplot)
+        print("plot update took {}".format(time.time()-vtime))
+        print("frame update took {}".format(time.time()-stime))
     
     def guisync(self,event:tk.Event):
         '''event called when synchronization button is pressed. Synchronizes video frames to force/displacement/time data based on user's contact and separation input'''
@@ -151,7 +165,7 @@ class analysisGUI:
     def back50frame(self,event:tk.Event):
         '''event called when the << frame button is pressed. Changes the frame by -50 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
-        if fnum < self.lastframe:
+        if fnum < self.lastframe and fnum>50:
             self.framenum.set(value=self.framenum.get()-50) 
         self.frameupdate()
     
@@ -197,3 +211,18 @@ class analysisGUI:
 if __name__ == '__main__':
     gui = analysisGUI()
     gui.main()
+    # vim = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/testVideo (6).mp4")
+    # stime = time.time()
+    # vdic = viddict(cv.VideoCapture(str(vim)))
+    # vtime = time.time()
+    # print("video opened in {}s".format(vtime-stime))
+    # cv.imshow("frame",vdic[100])
+    # print("frame shown in {}s".format(time.time()-vtime))
+    # cv.waitKey()
+    # time100 = time.time()
+    # cv.imshow("frame",vdic[1000])
+    # print("frame shown in {}s".format(time.time()-time100))
+    # cv.waitKey()
+    # cv.imshow("frame",vdic[2000])
+    # cv.waitKey()
+
