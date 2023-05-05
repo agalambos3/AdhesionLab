@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog as fd
 import cv2 as cv 
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
 NavigationToolbar2Tk)
@@ -33,16 +34,15 @@ class analysisGUI:
         self.root = tk.Tk()
         self.root.title("Video Analysis")
         self.framenum = tk.IntVar(value=1)
-        #specific files for testing
-        self.vidfile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/testVideo (6).mp4")
-        self.vid = cv.VideoCapture(str(self.vidfile))
+        vfilename = fd.askopenfilename()
+        self.vid = cv.VideoCapture(str(vfilename))
         if (self.vid.isOpened() == False):
             print("Error opening the video file")
-        
-        datafile = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
-        self.anlys = da.analysis(datafile)
+        dfilename = fd.askopenfilename()
+        self.anlys = da.analysis(dfilename)
         self.anlys.run_all(10)
-        t=self.anlys.get_trial(6)
+        self.trialnum = int(input("which trial is this video associated with?"))
+        t=self.anlys.get_trial(self.trialnum)
         self.contactframe = 5
         self.separationframe = 6
 
@@ -64,7 +64,7 @@ class analysisGUI:
         self.bframe= tk.Frame()
         self.infoframe = tk.Frame()
         self.plotframe= tk.Frame()
-        figdata = self.anlys.FvsT_TK_trial(6,vline=270)
+        figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=270)
         self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
         self.timeplot = cv2tk(self.fig,400)
         self.plotlabel = tk.Label(image=self.timeplot)
@@ -122,7 +122,7 @@ class analysisGUI:
         '''event called when synchronization button is pressed. Synchronizes video frames to force/displacement/time data based on user's contact and separation input'''
         if type(self.contactframe) == int and type(self.separationframe) == int:
             try:
-                self.syncodic= self.anlys.sync3(6,self.contactframe,self.separationframe)
+                self.syncodic= self.anlys.sync3(self.trialnum,self.contactframe,self.separationframe)
                 self.syncbool = True
                 print("Synced!")
                 self.frameupdate()
