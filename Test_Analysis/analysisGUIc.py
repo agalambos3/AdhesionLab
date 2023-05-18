@@ -32,60 +32,54 @@ class analysisGUI:
     """class used to run analysis GUI."""
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Video Analysis")
-        self.framenum = tk.IntVar(value=1)
-        vfilename = fd.askopenfilename()
-        self.vid = cv.VideoCapture(str(vfilename))
-        if (self.vid.isOpened() == False):
-            print("Error opening the video file")
-        dfilename = fd.askopenfilename()
-        self.anlys = da.analysis(dfilename)
-        self.anlys.run_all(10)
-        self.trialnum = int(input("which trial is this video associated with?"))
-        t=self.anlys.get_trial(self.trialnum)
+        self.root.title("Video Analysis") #name window
+        self.framenum = tk.IntVar(value=1) #framenum var
+        # vfilename = fd.askopenfilename()
+        # self.vid = cv.VideoCapture(str(vfilename))
+        # if (self.vid.isOpened() == False):
+        #     print("Error opening the video file")
+        # dfilename = fd.askopenfilename()
+        # self.anlys = da.analysis(dfilename)
+        # self.anlys.run_all(10)
+        # self.trialnum = int(input("which trial is this video associated with?"))
+        # t=self.anlys.get_trial(self.trialnum)
         self.contactframe = 5
         self.separationframe = 6
 
         self.syncbool = False
 
         self.syncodic= None
-        ze= t.get_zero_region()[1]
-        pe=t.get_pulloff_region()[1]
-        print(self.anlys.get_npdata()[ze])
-        print(self.anlys.get_npdata()[pe])
+        # ze= t.get_zero_region()[1]
+        # pe=t.get_pulloff_region()[1]
+        # print(self.anlys.get_npdata()[ze])
+        # print(self.anlys.get_npdata()[pe])
         #TODO change video to dictionary to get constant runtime. opencv vid.set method seems to use list implementation as run time increases the futher you go into the video 
-        self.viddict = viddict(self.vid)
-        frame = self.viddict[1]
+        # self.viddict = viddict(self.vid)
+        # frame = self.viddict[1]
         #defining GUI elements
         self.vidheight = 400
-        self.tkvidimage = cv2tk(frame,self.vidheight)
-        self.vidlabel = tk.Label(image=self.tkvidimage)
+        # self.tkvidimage = cv2tk(frame,self.vidheight)
+        self.vidlabel = tk.Label(image=None,height=40,width=40)
         self.vidwidth = self.vidlabel.winfo_reqwidth()
         self.bframe= tk.Frame()
         self.infoframe = tk.Frame()
         self.plotframe= tk.Frame()
-        figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=270)
-        self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-        self.timeplot = cv2tk(self.fig,400)
-        self.plotlabel = tk.Label(image=self.timeplot)
+        # figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=270)
+        # self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+        # self.timeplot = cv2tk(self.fig,400)
+        self.plotlabel = tk.Label(width=20)
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
-        self.backbutton = tk.Button(self.bframe,text="<")
-        self.backbutton.bind("<Button-1>",self.backframe)
-        self.back50button = tk.Button(self.bframe,text="<<")
-        self.back50button.bind("<Button-1>",self.back50frame)
-        self.forwardbutton = tk.Button(self.bframe,text=">")
-        self.forwardbutton.bind("<Button-1>",self.nextframe)
-        self.forward50button = tk.Button(self.bframe,text=">>")
-        self.forward50button.bind("<Button-1>",self.next50frame)
-        self.contactbutton = tk.Button(self.infoframe,text="contact")
-        self.contactbutton.bind("<Button-1>",self.contactset)
-        self.separationbutton = tk.Button(self.infoframe,text="separation")
-        self.separationbutton.bind("<Button-1>",self.separationset)
-        self.syncbutton = tk.Button(self.infoframe,text="sync")
-        self.syncbutton.bind("<Button-1>",self.guisync)
+        self.backbutton = tk.Button(self.bframe,text="<",command=self.backframe,state="disabled")
+        self.back50button = tk.Button(self.bframe,text="<<",command=self.back50frame,state="disabled")
+        self.forwardbutton = tk.Button(self.bframe,text=">",command=self.nextframe,state="disabled")
+        self.forward50button = tk.Button(self.bframe,text=">>",command=self.next50frame,state="disabled")
+        self.contactbutton = tk.Button(self.infoframe,text="contact",command=self.contactset,state="disabled")
+        self.separationbutton = tk.Button(self.infoframe,text="separation",command=self.separationset,state="disabled")
+        self.syncbutton = tk.Button(self.infoframe,text="sync",command= self.guisync,state="disabled")
 
-        self.lastframe = self.vid.get(cv.CAP_PROP_FRAME_COUNT)
-        self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=25,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=50)
+        # self.lastframe = self.vid.get(cv.CAP_PROP_FRAME_COUNT)
+        self.lastframe = 100
+        self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=25,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=5,state="disabled")
         
     def frameupdate(self):
         stime = time.time()
@@ -119,7 +113,7 @@ class analysisGUI:
         print("plot update took {}".format(time.time()-vtime))
         print("frame update took {}".format(time.time()-stime))
     
-    def guisync(self,event:tk.Event):
+    def guisync(self):
         '''event called when synchronization button is pressed. Synchronizes video frames to force/displacement/time data based on user's contact and separation input'''
         if type(self.contactframe) == int and type(self.separationframe) == int:
             try:
@@ -132,39 +126,39 @@ class analysisGUI:
         else:
             print("contact or separation frame not given")
     
-    def contactset(self,event:tk.Event):
+    def contactset(self):
         self.contactframe = self.framenum.get()
         print("contact frame set to {}".format(self.contactframe))
     
-    def separationset(self,event:tk.Event):
+    def separationset(self):
         self.separationframe = self.framenum.get()
         print("separation frame set to {}".format(self.separationframe))
     
 
 
 
-    def nextframe(self,event:tk.Event):
+    def nextframe(self):
         '''event called when the > frame button is pressed. Changes the frame by +1 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()+1) 
         self.frameupdate()
     
-    def next50frame(self,event:tk.Event):
+    def next50frame(self):
         '''event called when the >> frame button is pressed. Changes the frame by +50 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum < self.lastframe:
             self.framenum.set(value=self.framenum.get()+50) 
         self.frameupdate()
     
-    def backframe(self,event:tk.Event):
+    def backframe(self):
         '''event called when the < frame button is pressed. Changes the frame by -1 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum > 1:
             self.framenum.set(value=fnum-1) 
         self.frameupdate()
     
-    def back50frame(self,event:tk.Event):
+    def back50frame(self):
         '''event called when the << frame button is pressed. Changes the frame by -50 and updates the GUI accordingly.'''
         fnum = self.framenum.get()
         if fnum < self.lastframe and fnum>50:
