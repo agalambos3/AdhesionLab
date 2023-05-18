@@ -54,7 +54,7 @@ class analysisGUI:
         self.backbutton = tk.Button(self.bframe,text="<",command=self.backframe,state="disabled")
         self.back50button = tk.Button(self.bframe,text="<<",command=self.back50frame,state="disabled")
         self.forwardbutton = tk.Button(self.bframe,text=">",command=self.nextframe,state="disabled")
-        self.forward50button = tk.Button(self.bframe,text=">>",command=self.next50frame,state="normal")
+        self.forward50button = tk.Button(self.bframe,text=">>",command=self.next50frame,state="disabled")
         self.contactbutton = tk.Button(self.infoframe,text="contact",command=self.contactset,state="disabled")
         self.separationbutton = tk.Button(self.infoframe,text="separation",command=self.separationset,state="disabled")
         self.syncbutton = tk.Button(self.infoframe,text="sync",command= self.guisync,state="disabled")
@@ -62,7 +62,7 @@ class analysisGUI:
         self.openfilebutton = tk.Button(self.fileframe,text="open file",command= self.openfile)
 
 
-        self.lastframe = 100
+        self.lastframe = 1000
         self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=25,command=self.gotoframe,length=20,repeatdelay=50,repeatinterval=5,state="disabled")
 
     def openvideo(self):
