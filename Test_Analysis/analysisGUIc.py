@@ -82,6 +82,9 @@ class analysisGUI:
             self.backbutton.configure(state="normal")
             self.back50button.configure(state="normal")
             self.forward50button.configure(state="normal")
+            self.contactbutton.configure(state="normal")
+            self.separationbutton.configure(state="normal")
+            self.syncbutton.configure(state="normal")
             self.vidbool = True
             self.root.geometry("")
         except Exception as error:
@@ -98,28 +101,10 @@ class analysisGUI:
         self.timeplot = cv2tk(self.fig,400)
         self.plotlabel.config(image=self.timeplot)
         self.databool = True
-        fig = self.anlys.FvsT_gui(self.trialnum,vline=None)
+        self.fig = self.anlys.FvsT_gui(self.trialnum,vline=None)
 
         print("other method started")
 
-        import matplotlib
-        matplotlib.use('TkAgg')
-        from matplotlib.figure import Figure
-        from matplotlib.backends.backend_tkagg import (
-            FigureCanvasTkAgg,
-            NavigationToolbar2Tk)
-        self.figure_canvas = FigureCanvasTkAgg(fig, self.rightframe)
-
-        # create the toolbar
-        NavigationToolbar2Tk(self.figure_canvas, self.rightframe)
-        self.figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-
-
-        self.root.geometry("")
-
-    def tkagg(self):
-        figdata = self.anlys.FvsT_gui(self.trialnum,vline=None)
         import matplotlib
         matplotlib.use('TkAgg')
         from matplotlib.figure import Figure
@@ -130,11 +115,13 @@ class analysisGUI:
 
         # create the toolbar
         NavigationToolbar2Tk(self.figure_canvas, self.rightframe)
+        self.figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 
 
+        self.root.geometry("")
 
-
+    
     def frameupdate(self):
         stime = time.time()
         '''Updates the ui elements to match current frame position. Usually called by tkinter event when user moves to different frame'''
@@ -159,6 +146,21 @@ class analysisGUI:
                 self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
                 self.timeplot = cv2tk(self.fig,400)
                 self.plotlabel.config(image=self.timeplot)
+            else:
+                datatime = None
+                figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
+                self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+                self.timeplot = cv2tk(self.fig,400)
+                self.plotlabel.config(image=self.timeplot)
+            #tkagg implementation updating
+            if self.syncbool == True:
+                try:
+                    datatime = self.syncodic[int(fnum)]
+                except Exception as e:
+                    datatime = None
+                    print("error is {}".format(e))
+                self.fig = self.anlys.FvsT_gui(self.trialnum,vline=datatime)
+                self.figure_canvas.draw()
             else:
                 datatime = None
                 figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)

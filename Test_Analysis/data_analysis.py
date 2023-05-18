@@ -390,7 +390,7 @@ class analysis():
 
         ps = t.get_pulloff_region()[0]
         pe = t.get_pulloff_region()[1]
-        self.fig.set_dpi(100)
+        self.fig.set_dpi(70)
         x = self.get_npdata()[:,2]
         y = self.get_npdata()[:,1]
         plt.clf()
