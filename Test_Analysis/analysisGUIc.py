@@ -45,7 +45,6 @@ class analysisGUI:
         self.bframe= tk.Frame()
         self.leftframe = tk.Frame()
         self.infoframe = tk.Frame(self.leftframe)
-        self.plotframe= tk.Frame()
         self.fileframe = tk.Frame(self.leftframe)
        
         self.plotlabel = tk.Label(image=None)
@@ -98,6 +97,19 @@ class analysisGUI:
         self.plotlabel.config(image=self.timeplot)
         self.databool = True
         self.root.geometry("")
+
+    def tkagg(self):
+        import matplotlib
+        matplotlib.use('TkAgg')
+        from matplotlib.figure import Figure
+        from matplotlib.backends.backend_tkagg import (
+            FigureCanvasTkAgg,
+            NavigationToolbar2Tk)
+        figure_canvas = FigureCanvasTkAgg(self.fig, self.root)
+
+        # create the toolbar
+        NavigationToolbar2Tk(figure_canvas, self.root)
+
 
 
 
@@ -207,8 +219,7 @@ class analysisGUI:
         self.separationbutton.pack()
         self.syncbutton.pack()
         self.vidlabel.grid(row=0,column=1)
-        self.plotframe.grid(row=0,column=2) 
-        self.plotlabel.grid(row=0,column=3)       
+        self.plotlabel.grid(row=0,column=2)       
         self.bframe.grid(row=1,column=1)
         self.back50button.pack(side="left")
         self.backbutton.pack(side="left")
