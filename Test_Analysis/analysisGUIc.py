@@ -49,12 +49,12 @@ class analysisGUI:
         self.rightframe= tk.Frame()
         self.rframetext= tk.Label(self.rightframe,text="right frame")
        
-        self.plotlabel = tk.Label(image=None)
+        # self.plotlabel = tk.Label(image=None)
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
         self.backbutton = tk.Button(self.bframe,text="<",command=self.backframe,state="disabled")
         self.back50button = tk.Button(self.bframe,text="<<",command=self.back50frame,state="disabled")
         self.forwardbutton = tk.Button(self.bframe,text=">",command=self.nextframe,state="disabled")
-        self.forward50button = tk.Button(self.bframe,text=">>",command=self.next50frame,state="disabled")
+        self.forward50button = tk.Button(self.bframe,text=">>",command=self.next50frame,state="normal")
         self.contactbutton = tk.Button(self.infoframe,text="contact",command=self.contactset,state="disabled")
         self.separationbutton = tk.Button(self.infoframe,text="separation",command=self.separationset,state="disabled")
         self.syncbutton = tk.Button(self.infoframe,text="sync",command= self.guisync,state="disabled")
@@ -96,18 +96,10 @@ class analysisGUI:
         self.anlys = da.analysis(dfilename)
         self.anlys.run_all(10)
         self.trialnum = int(input("which trial is this video associated with?"))
-        figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=None)
-        self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-        self.timeplot = cv2tk(self.fig,400)
-        self.plotlabel.config(image=self.timeplot)
-        self.databool = True
         self.fig = self.anlys.FvsT_gui(self.trialnum,vline=None)
-
-        print("other method started")
 
         import matplotlib
         matplotlib.use('TkAgg')
-        from matplotlib.figure import Figure
         from matplotlib.backends.backend_tkagg import (
             FigureCanvasTkAgg,
             NavigationToolbar2Tk)
@@ -116,9 +108,10 @@ class analysisGUI:
         # create the toolbar
         NavigationToolbar2Tk(self.figure_canvas, self.rightframe)
         self.figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        
 
 
-
+        self.databool = True
         self.root.geometry("")
 
     
@@ -132,27 +125,10 @@ class analysisGUI:
             self.tkvidimage = cv2tk(frame,self.vidheight)
             self.vidlabel.config(image=self.tkvidimage)
             vtime = time.time()
-            # print("video update took {}".format(vtime-stime))
+            print("video update took {}".format(vtime-stime))
             self.framenumlabel.config(text="Frame:"+str(fnum))
-        if self.databool == True:
-            #update time plot
-            if self.syncbool == True:
-                try:
-                    datatime = self.syncodic[int(fnum)]
-                except Exception as e:
-                    datatime = None
-                    print("error is {}".format(e))
-                figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
-                self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-                self.timeplot = cv2tk(self.fig,400)
-                self.plotlabel.config(image=self.timeplot)
-            else:
-                datatime = None
-                figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
-                self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-                self.timeplot = cv2tk(self.fig,400)
-                self.plotlabel.config(image=self.timeplot)
             #tkagg implementation updating
+        if self.databool == True:
             if self.syncbool == True:
                 try:
                     datatime = self.syncodic[int(fnum)]
@@ -160,13 +136,17 @@ class analysisGUI:
                     datatime = None
                     print("error is {}".format(e))
                 self.fig = self.anlys.FvsT_gui(self.trialnum,vline=datatime)
-                self.figure_canvas.draw()
+                ftime = time.time()
+                print("fig generation took {}".format(ftime-vtime))
+                self.figure_canvas.draw_idle()
+                print("draw took {}".format(time.time()-ftime))
             else:
                 datatime = None
-                figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
-                self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-                self.timeplot = cv2tk(self.fig,400)
-                self.plotlabel.config(image=self.timeplot)
+                self.fig = self.anlys.FvsT_gui(self.trialnum,vline=datatime)
+                ftime = time.time()
+                print("fig generation took {}".format(ftime-vtime))
+                self.figure_canvas.draw_idle()
+                print("draw took {}".format(time.time()-ftime))
         # print("plot update took {}".format(time.time()-vtime))
         # print("frame update took {}".format(time.time()-stime))
     
@@ -231,11 +211,11 @@ class analysisGUI:
         
 
     def main(self):
-        '''main method that is called to run the GUI. The GUI is layed out and the mainloop() tkinter method is called.'''
+        '''main method that is called to run the GUI. The GUI is laid out and the mainloop() tkinter method is called.'''
         self.leftframe.grid(row=0,column=0)
         self.infoframe.pack()
         self.fileframe.pack()
-        self.rightframe.grid(row=0,column=3)
+        self.rightframe.grid(row=0,column=2)
         # self.rframetext.pack()
         self.openvideobutton.pack()
         self.openfilebutton.pack()
@@ -244,7 +224,7 @@ class analysisGUI:
         self.separationbutton.pack()
         self.syncbutton.pack()
         self.vidlabel.grid(row=0,column=1)
-        self.plotlabel.grid(row=0,column=2)       
+        # self.plotlabel.grid(row=0,column=2)       
         self.bframe.grid(row=1,column=1)
         self.back50button.pack(side="left")
         self.backbutton.pack(side="left")
