@@ -46,6 +46,8 @@ class analysisGUI:
         self.leftframe = tk.Frame()
         self.infoframe = tk.Frame(self.leftframe)
         self.fileframe = tk.Frame(self.leftframe)
+        self.rightframe= tk.Frame()
+        self.rframetext= tk.Label(self.rightframe,text="right frame")
        
         self.plotlabel = tk.Label(image=None)
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
@@ -96,19 +98,38 @@ class analysisGUI:
         self.timeplot = cv2tk(self.fig,400)
         self.plotlabel.config(image=self.timeplot)
         self.databool = True
-        self.root.geometry("")
+        fig = self.anlys.FvsT_gui(self.trialnum,vline=None)
 
-    def tkagg(self):
+        print("other method started")
+
         import matplotlib
         matplotlib.use('TkAgg')
         from matplotlib.figure import Figure
         from matplotlib.backends.backend_tkagg import (
             FigureCanvasTkAgg,
             NavigationToolbar2Tk)
-        figure_canvas = FigureCanvasTkAgg(self.fig, self.root)
+        self.figure_canvas = FigureCanvasTkAgg(fig, self.rightframe)
 
         # create the toolbar
-        NavigationToolbar2Tk(figure_canvas, self.root)
+        NavigationToolbar2Tk(self.figure_canvas, self.rightframe)
+        self.figure_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+
+
+        self.root.geometry("")
+
+    def tkagg(self):
+        figdata = self.anlys.FvsT_gui(self.trialnum,vline=None)
+        import matplotlib
+        matplotlib.use('TkAgg')
+        from matplotlib.figure import Figure
+        from matplotlib.backends.backend_tkagg import (
+            FigureCanvasTkAgg,
+            NavigationToolbar2Tk)
+        self.figure_canvas = FigureCanvasTkAgg(self.fig, self.rightframe)
+
+        # create the toolbar
+        NavigationToolbar2Tk(self.figure_canvas, self.rightframe)
 
 
 
@@ -212,6 +233,8 @@ class analysisGUI:
         self.leftframe.grid(row=0,column=0)
         self.infoframe.pack()
         self.fileframe.pack()
+        self.rightframe.grid(row=0,column=3)
+        # self.rframetext.pack()
         self.openvideobutton.pack()
         self.openfilebutton.pack()
         self.framenumlabel.pack()

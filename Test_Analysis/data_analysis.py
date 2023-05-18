@@ -372,6 +372,46 @@ class analysis():
         bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
 
         return bytes
+
+    def FvsT_gui(self,number,vline=None):
+        '''converts matplotlib plot of Force vs time into np.asarray format that can be used by analyisGUIC.py to have plot appear in gui'''
+        t = self.get_trial(number)
+        zs = t.get_zero_region()[0]
+        ze = t.get_zero_region()[1]
+
+        ls = t.get_loading_region()[0]
+        le = t.get_loading_region()[1]
+
+        hs = t.get_holding_region()[0]
+        he = t.get_holding_region()[1]
+
+        uls = t.get_unloading_region()[0]
+        ule = t.get_unloading_region()[1]
+
+        ps = t.get_pulloff_region()[0]
+        pe = t.get_pulloff_region()[1]
+        self.fig.set_dpi(100)
+        x = self.get_npdata()[:,2]
+        y = self.get_npdata()[:,1]
+        plt.clf()
+        ax1 = self.fig.add_subplot(111)
+        ax1.set_title("Trial {}".format(number))
+        ax1.set_xlabel("Time [s]")
+        ax1.set_ylabel("Standard Force [N]")
+
+
+        ax1.scatter(x[zs:ze], y[zs:ze], s=2, c='b', marker="o", label='zeros')
+        ax1.scatter(x[ls:le-1],y[ls:le-1], s=2, c='r', marker="o", label='loading')
+        ax1.scatter(x[hs:he-1],y[hs:he-1], s=2, c='g', marker="o", label='holding')
+        ax1.scatter(x[uls:ule-1],y[uls:ule-1], s=2, c='m', marker="o", label='unloading')
+        ax1.scatter(x[ps-1:pe],y[ps-1:pe], s=2, c='c', marker="o", label='pulloff')
+        if vline != None:
+            ax1.axvline(vline)
+
+
+        return self.fig
+
+            
     
     def sync(self,trialnum,framerate,contact,separation):
         """old version of sync kind of bad"""
