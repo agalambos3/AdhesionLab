@@ -34,40 +34,21 @@ class analysisGUI:
         self.root = tk.Tk()
         self.root.title("Video Analysis") #name window
         self.framenum = tk.IntVar(value=1) #framenum var
-        # vfilename = fd.askopenfilename()
-        # self.vid = cv.VideoCapture(str(vfilename))
-        # if (self.vid.isOpened() == False):
-        #     print("Error opening the video file")
-        # dfilename = fd.askopenfilename()
-        # self.anlys = da.analysis(dfilename)
-        # self.anlys.run_all(10)
-        # self.trialnum = int(input("which trial is this video associated with?"))
-        # t=self.anlys.get_trial(self.trialnum)
-        self.contactframe = 5
-        self.separationframe = 6
-
+        self.vidbool = False
+        self.databool = False
         self.syncbool = False
-
         self.syncodic= None
-        # ze= t.get_zero_region()[1]
-        # pe=t.get_pulloff_region()[1]
-        # print(self.anlys.get_npdata()[ze])
-        # print(self.anlys.get_npdata()[pe])
-        #TODO change video to dictionary to get constant runtime. opencv vid.set method seems to use list implementation as run time increases the futher you go into the video 
-        # self.viddict = viddict(self.vid)
-        # frame = self.viddict[1]
+
         #defining GUI elements
         self.vidheight = 400
-        # self.tkvidimage = cv2tk(frame,self.vidheight)
-        self.vidlabel = tk.Label(image=None,height=40,width=40)
-        self.vidwidth = self.vidlabel.winfo_reqwidth()
+        self.vidlabel = tk.Label(image=None)
         self.bframe= tk.Frame()
-        self.infoframe = tk.Frame()
+        self.leftframe = tk.Frame()
+        self.infoframe = tk.Frame(self.leftframe)
         self.plotframe= tk.Frame()
-        # figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=270)
-        # self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-        # self.timeplot = cv2tk(self.fig,400)
-        self.plotlabel = tk.Label(width=20)
+        self.fileframe = tk.Frame(self.leftframe)
+       
+        self.plotlabel = tk.Label(image=None)
         self.framenumlabel = tk.Label(self.infoframe,text= "Frame:"+str(self.framenum.get()),width=10)
         self.backbutton = tk.Button(self.bframe,text="<",command=self.backframe,state="disabled")
         self.back50button = tk.Button(self.bframe,text="<<",command=self.back50frame,state="disabled")
@@ -76,42 +57,83 @@ class analysisGUI:
         self.contactbutton = tk.Button(self.infoframe,text="contact",command=self.contactset,state="disabled")
         self.separationbutton = tk.Button(self.infoframe,text="separation",command=self.separationset,state="disabled")
         self.syncbutton = tk.Button(self.infoframe,text="sync",command= self.guisync,state="disabled")
+        self.openvideobutton = tk.Button(self.fileframe,text="open video",command= self.openvideo)
+        self.openfilebutton = tk.Button(self.fileframe,text="open file",command= self.openfile)
 
-        # self.lastframe = self.vid.get(cv.CAP_PROP_FRAME_COUNT)
+
         self.lastframe = 100
-        self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=25,command=self.gotoframe,length=self.vidwidth,repeatdelay=50,repeatinterval=5,state="disabled")
-        
+        self.slider = tk.Scale(orient="horizontal",from_=1,to=self.lastframe,variable=self.framenum,resolution=25,command=self.gotoframe,length=20,repeatdelay=50,repeatinterval=5,state="disabled")
+
+    def openvideo(self):
+        try:
+            vfilename = fd.askopenfilename()
+            self.vid = cv.VideoCapture(str(vfilename))
+            if (self.vid.isOpened() == False):
+                print("Error opening the video file")
+            self.viddict = viddict(self.vid)
+            frame = self.viddict[1]
+            self.tkvidimage = cv2tk(frame,self.vidheight)
+            self.vidlabel.configure(image=self.tkvidimage)
+            vidwidth = self.vidlabel.winfo_reqwidth()
+            self.lastframe = self.vid.get(cv.CAP_PROP_FRAME_COUNT)
+            self.slider.configure(to=self.lastframe,length=vidwidth,state="normal")
+            self.forwardbutton.configure(state="normal")
+            self.backbutton.configure(state="normal")
+            self.back50button.configure(state="normal")
+            self.forward50button.configure(state="normal")
+            self.vidbool = True
+            self.root.geometry("")
+        except Exception as error:
+            print("Video failed to open")
+            print(error)
+
+    def openfile(self):
+        dfilename = fd.askopenfilename()
+        self.anlys = da.analysis(dfilename)
+        self.anlys.run_all(10)
+        self.trialnum = int(input("which trial is this video associated with?"))
+        figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=None)
+        self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+        self.timeplot = cv2tk(self.fig,400)
+        self.plotlabel.config(image=self.timeplot)
+        self.databool = True
+        self.root.geometry("")
+
+
+
+
     def frameupdate(self):
         stime = time.time()
         '''Updates the ui elements to match current frame position. Usually called by tkinter event when user moves to different frame'''
         #update video
-        fnum =self.framenum.get()
-        frame=self.viddict[fnum]
-        self.tkvidimage = cv2tk(frame,self.vidheight)
-        self.vidlabel.config(image=self.tkvidimage)
-        vtime = time.time()
-        print("video update took {}".format(vtime-stime))
-        #update frame counter
-        self.framenumlabel.config(text="Frame:"+str(fnum))
-        #update time plot
-        if self.syncbool == True:
-            try:
-                datatime = self.syncodic[int(fnum)]
-            except Exception as e:
+        if self.vidbool == True:
+            fnum =self.framenum.get()
+            frame=self.viddict[fnum]
+            self.tkvidimage = cv2tk(frame,self.vidheight)
+            self.vidlabel.config(image=self.tkvidimage)
+            vtime = time.time()
+            # print("video update took {}".format(vtime-stime))
+            self.framenumlabel.config(text="Frame:"+str(fnum))
+        if self.databool == True:
+            #update time plot
+            if self.syncbool == True:
+                try:
+                    datatime = self.syncodic[int(fnum)]
+                except Exception as e:
+                    datatime = None
+                    print("error is {}".format(e))
+                figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
+                self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+                self.timeplot = cv2tk(self.fig,400)
+                self.plotlabel.config(image=self.timeplot)
+            else:
                 datatime = None
-                print("error is {}".format(e))
-            figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
-            self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-            self.timeplot = cv2tk(self.fig,400)
-            self.plotlabel.config(image=self.timeplot)
-        else:
-            datatime = None
-            figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
-            self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
-            self.timeplot = cv2tk(self.fig,400)
-            self.plotlabel.config(image=self.timeplot)
-        print("plot update took {}".format(time.time()-vtime))
-        print("frame update took {}".format(time.time()-stime))
+                figdata = self.anlys.FvsT_TK_trial(self.trialnum,vline=datatime)
+                self.fig = cv.imdecode(figdata, cv.IMREAD_COLOR)
+                self.timeplot = cv2tk(self.fig,400)
+                self.plotlabel.config(image=self.timeplot)
+        # print("plot update took {}".format(time.time()-vtime))
+        # print("frame update took {}".format(time.time()-stime))
     
     def guisync(self):
         '''event called when synchronization button is pressed. Synchronizes video frames to force/displacement/time data based on user's contact and separation input'''
@@ -134,8 +156,6 @@ class analysisGUI:
         self.separationframe = self.framenum.get()
         print("separation frame set to {}".format(self.separationframe))
     
-
-
 
     def nextframe(self):
         '''event called when the > frame button is pressed. Changes the frame by +1 and updates the GUI accordingly.'''
@@ -177,7 +197,11 @@ class analysisGUI:
 
     def main(self):
         '''main method that is called to run the GUI. The GUI is layed out and the mainloop() tkinter method is called.'''
-        self.infoframe.grid(row=0,column=0)
+        self.leftframe.grid(row=0,column=0)
+        self.infoframe.pack()
+        self.fileframe.pack()
+        self.openvideobutton.pack()
+        self.openfilebutton.pack()
         self.framenumlabel.pack()
         self.contactbutton.pack()
         self.separationbutton.pack()
