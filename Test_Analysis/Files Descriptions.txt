@@ -1,10 +1,10 @@
-flawdetection mono.py:
-This program contains the image processing and contour detection that is used to recognize the flaw and the probe contact area
-image analysis.py:
-This program is outputs a histogram of the pixel values for an image. I have found it useful in thinking about image processing
-autoselectroi.py:
-this code autoselects the ROI for the image by (in theory removing the region of black due to the edge of the levelling table going into the image)
 data_analysis.py:
 This script that can be used to analyze and visualize force-displacement data collected from tensile tester. 
 detectaveragesC.py:
 class based implementation of intensity averaging algorithm to track contact area in videos from probe tack test
+flawdetection mono.py:
+This program contains the image processing and contour detection that is used to recognize the flaw and the probe contact area
+image analysis.py:
+This program is outputs a histogram of the pixel values for an image. I have found it useful in thinking about image processing
+
+
