@@ -107,6 +107,8 @@ class trial():
         fig = plt.figure()
         ax1 = fig.add_subplot(111)
         ax1.set_title("Trial {}".format(self.get_number()))
+        ax1.set_xlabel("Standard Travel [mm]")
+        ax1.set_ylabel("Standard Force [N]")
 
 
         ax1.scatter(x[0:ze], y[0:ze], s=2, c='b', marker="o", label='zeros')
@@ -117,7 +119,7 @@ class trial():
     
         print(t)
         plt.legend(loc='upper left');
-        plt.savefig('trial{}'.format(self.get_number()))
+        # plt.savefig('trial{}'.format(self.get_number()))
         plt.show()
 
 class analysis():
@@ -221,7 +223,6 @@ class analysis():
                 i+=1
             i4 = i
             t.set_unloading_region(i3,i4)
-            #is there a fucky wucky here?
 
             #summing and iteration through pulloff region
             deltime = self.npdata[i+1,2]-self.npdata[i,2]
@@ -560,16 +561,18 @@ def user_input():
     sdf.to_excel("trial statistics.xlsx",index=False)
 
 if __name__ == "__main__":
-    file = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Helen/20221102_10_30_holeOnPunch_test/clean/pyxpert_experimental_7.xlsx")
+    file = dimport.drive_import("/Lab Computer/Probe Tack Test Data/Yuelin 2022 Summer/20220712_10_3160_4000edge_10_angle/xAngle/xAngle.xlsx")
     anlys = analysis(file)
     htime = float(10)
     anlys.run_all(htime)
-    syncdic= anlys.sync3(6,370,2155)
-    t = anlys.get_trial(6)
-    start = t.get_loading_region()[0]
-    end = t.get_pulloff_region()[1]
-    print("syndic is given by:")
-    print(syncdic)
+    print(anlys.get_num_trials())
+    anlys.get_trial(50).plot()
+    # syncdic= anlys.sync3(6,370,2155)
+    # t = anlys.get_trial(6)
+    # start = t.get_loading_region()[0]
+    # end = t.get_pulloff_region()[1]
+    # print("syndic is given by:")
+    # print(syncdic)
     # print(anlys.get_npdata()[end-20:end])
     
     # anlys.FvsDplot_trial(6)
