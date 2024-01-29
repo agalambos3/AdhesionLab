@@ -18,17 +18,19 @@ In addition to the main branch there is also a branch named "AnalysisGUI." This 
 ## How can I use this repository?
 GitHub repositories have countless features and ways to interact with them and it can be rather overwhelming to parse everything and to do simple things. In this section I aim to describe how you can use the repository in the context of adhesive research with Helen. I will present the two main ways I envision the repository being used and the most important things to know for each of these use cases. 
 ### Using the repository to run up to date code
-Although writing the code contained within this repository is quite fun, the real reason all of this exists is so that we can run tests, collect data, and analyze it. The repository should contain up to date and functioning code necessary to do all of this. Because of this even if you do not intend to write any code and just want to do fun sciencey stuff you will (ideally) interact with this repository, and use it to ensure that you are running the right version of the code. The easiest way to to make sure you are running up to date code is to use the github desktop application to sync files on your computer with those on this repository. Below are some resources to help getting started with the gituhb desktop application and syncing to a repository:
+Although writing the code contained within this repository is quite fun, the real reason all of this exists is so that we can run tests, collect data, and analyze it. The repository should contain up to date and functioning code necessary to do all of this. Because of this even if you do not intend to write any code and just want to do fun sciencey stuff you will (ideally) interact with this repository, and use it to ensure that you are running the right version of the code. The easiest way to to make sure you are running up to date code is to use the github desktop application to sync files on your computer with those on this repository. Below are some resources to help getting started with the github desktop application and syncing to a repository:
 
 https://docs.github.com/en/desktop/overview/getting-started-with-github-desktop
 
 https://docs.github.com/en/desktop/working-with-your-remote-repository-on-github-or-github-enterprise/syncing-your-branch-in-github-desktop
 
-You will also need to have python and the following packages installed:
+Some of the scripts ask the user to input the directory of a data file. While it is possible, to download files on a case by case basis from the google drive, the easier method is to use the google drive desktop [application](https://www.google.com/drive/download/). This application will allow you to access all files on the drive as if they were located on your own computer.  
+
+To run the scripts you will  need to have python and the following python packages installed:
 1. [numpy](https://numpy.org/)
 2. [pandas](https://pandas.pydata.org/)
 3. [matplotlib](https://matplotlib.org/)
 4. [openCV-python](https://pypi.org/project/opencv-python/)
 5. [tkinter](https://docs.python.org/3/library/tkinter.html)
 
-Most scripts only use a subset of these packages, so if you only need to use one script, the `import` at the top of script should indicate what you need to have installed. 
+Most scripts only use a subset of these packages, so if you only need to use one script, the `import` at the top of script's code should indicate what you need to have installed. 
